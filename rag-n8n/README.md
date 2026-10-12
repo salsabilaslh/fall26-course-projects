@@ -25,6 +25,7 @@ The complete automation workflow moves seamlessly from document ingestion on the
 The automated output email rendered cleanly via HTML formatting, ensuring high readability and compliance with academic submission standards:
 
 ![Email Output Result](./email-output.png)
+![Email Output Result](./email-output2.png)
 
 ---
 
