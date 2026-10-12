@@ -1,0 +1,446 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1x0xm9yhX0EALvSCP9LwUiMnu_iXDOJnG",
+          "mode": "url"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        -672
+      ],
+      "id": "05fbcedf-a091-4abc-bb85-d7b80eaa96a7",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YN1wQnqqEcXYL81R",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -784,
+        -672
+      ],
+      "id": "5c2ed4a3-afce-478e-ae19-8a1ef035bab4",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YN1wQnqqEcXYL81R",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "=documents",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -560,
+        -672
+      ],
+      "id": "fbd9ece1-8c62-472c-bd26-12a3cbc14f6b",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "LP3jQVx1OGmoLRA9",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        -464
+      ],
+      "id": "71d8887c-28d9-45fc-a006-9d0e652dd54e",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GOioZCpxzWjkqIXw",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -416,
+        -464
+      ],
+      "id": "6eb64a19-84d4-4667-a897-4917071dfcf9",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -288
+      ],
+      "id": "1358d33b-88ef-4f3e-8935-41828b2f0253",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -48,
+        -672
+      ],
+      "id": "1444d9ae-1145-4e00-89c8-2c30946a65a6",
+      "name": "When chat message received",
+      "webhookId": "c80c0e62-fc85-4607-9da9-f5d3d6ad22fa"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        176,
+        -672
+      ],
+      "id": "df035515-95cc-46e6-a0ad-01096aa4b8e0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        -464
+      ],
+      "id": "fe04570f-c7af-44de-9f96-b80f5f893d79",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GOioZCpxzWjkqIXw",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        -464
+      ],
+      "id": "21c60b00-72c2-4ba1-aae2-cab729d6b234",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search information from database.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        -384
+      ],
+      "id": "633de5df-595b-4d2e-9e11-0b0db333e221",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "LP3jQVx1OGmoLRA9",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f8ae3352-bb7b-4a58-bf48-610d771f712e",
+              "name": "body",
+              "value": "=<p><b>질문:</b> 스몰데이터에 대해 설명해줘</p>\n<p><b>답변:</b><br>{{ $json.output }}</p>\n<hr>\n<p><small>본 메일은 '미래AI기술.pdf' 문서 기반 RAG 워크플로우(n8n)에서 자동 발송되었습니다.</small></p>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        720,
+        -448
+      ],
+      "id": "5af448a3-f2b5-4520-8eb6-9b55cf8a9551",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "ancestor9@kbu.ac.kr",
+        "subject": "[RAG 답변] 스몰데이터에 대해 설명해줘",
+        "message": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        -672
+      ],
+      "id": "95835f94-f294-4981-b4fd-4803922b29e0",
+      "name": "Send a message",
+      "webhookId": "5539f0ba-2ae4-4491-b5c0-8a4358d40e68",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BvSnrgP1rEg8WIJg",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        384,
+        -240
+      ],
+      "id": "0381872c-2c71-4f4e-a2c1-85aa3d78484a",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GOioZCpxzWjkqIXw",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get raw output from AI Agent\nconst rawOutput = $input.item.json.output || \"\";\n\n// Clean or convert Markdown format to HTML for neatness\nlet formattedBody = rawOutput\n  // Convert ### headings to bold with spacing\n  .replace(/###\\s*(.*?)(?=\\n|$)/g, '<br><br><b>$1</b><br>')\n  // Convert **bold** markdown to HTML <b> tags\n  .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n  // Convert bullet points or list markers\n  .replace(/\\*\\s/g, '<br>• ')\n  // Clean up Markdown table symbols if present\n  .replace(/\\|/g, ' &nbsp; ')\n  // Replace line breaks (\\n) with HTML line break tags (<br>)\n  .replace(/\\n/g, '<br>');\n\n// Combine with question format and footer\nconst finalBody = `\n  <p><b>질문:</b> 스몰데이터에 대해 설명해줘</p>\n  <p><b>답변:</b><br>${formattedBody}</p>\n  <hr>\n  <p><small>본 메일은 '미래AI기술.pdf' 문서 기반 RAG 워크플로우(n8n)에서 자동 발송되었습니다.</small></p>\n`;\n\nreturn [{ json: { body: finalBody } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        -672
+      ],
+      "id": "ad6aae3f-0219-47d5-b156-b6d2cf1cd6d7",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "bacc7576-5ec2-4f2b-a7c7-466e8dfe0e8c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1654398ad1e386e640807b8170015a0ab28239932dddeac5c2d1f337ec16fdf2"
+  },
+  "nodeGroups": [],
+  "id": "glBF1bqgsAUIIqds",
+  "tags": []
+}
